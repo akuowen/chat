@@ -1,6 +1,8 @@
 mod config;
 
 use anyhow::Result;
+use axum::Router;
+use chat_server::DatabaseConfig;
 use chat_server::{get_router, AppConfig};
 use tracing::info;
 use tracing::metadata::LevelFilter;
@@ -12,7 +14,7 @@ async fn main() -> Result<()> {
     tracing_subscriber::registry().with(layer).init();
     let app_config = AppConfig::try_load()?;
     let addr: String = format!("0.0.0.0:{}", app_config.server.port);
-    let app = get_router(app_config);
+    let app: Router = get_router(app_config).await?;
     let listener = tokio::net::TcpListener::bind(&addr).await.unwrap();
     info!("server is running on {}", addr);
     axum::serve(listener, app).await.unwrap();

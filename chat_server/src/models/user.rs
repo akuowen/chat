@@ -2,6 +2,7 @@ use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
     Argon2,
 };
+use sqlx::postgres::PgListener;
 use sqlx::PgPool;
 
 use crate::{AppError, User};
@@ -43,6 +44,9 @@ impl User {
         password: &str,
         pool: &PgPool,
     ) -> anyhow::Result<Option<Self>, AppError> {
+        let mut listener = PgListener::connect_with(pool).await?;
+        listener.listen("channel_name").await?;
+
         let user: Option<User> =
             sqlx::query_as(r#"SELECT id,fullname,email,created_at FROM users WHERE email = $1"#)
                 .bind(email)

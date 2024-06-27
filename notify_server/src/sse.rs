@@ -14,7 +14,7 @@ pub(crate) async fn sse_handler(
     //
     // You can also create streams from tokio channels using the wrappers in
     // https://docs.rs/tokio-stream
-    let stream = stream::repeat_with(|| Event::default().data("hi!"))
+    let stream = stream::repeat_with(|| Event::default().data("hi!").id("abc"))
         .map(Ok)
         .throttle(Duration::from_secs(1));
 

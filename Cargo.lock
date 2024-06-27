@@ -280,7 +280,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "chat_server"
+name = "chat-server"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -1173,7 +1173,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "notify_server"
+name = "notify-server"
 version = "0.1.0"
 dependencies = [
  "anyhow",

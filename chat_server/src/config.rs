@@ -3,26 +3,18 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs::File;
 
+use super::DatabaseConfig;
+
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AppConfig {
     pub server: ServerConfig,
-    // pub database: DatabaseConfig,
+    pub database: DatabaseConfig,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ServerConfig {
     pub host: String,
     pub port: u16,
-}
-
-#[allow(dead_code)]
-#[derive(Debug, Deserialize, Serialize)]
-pub struct DatabaseConfig {
-    pub host: String,
-    pub port: u16,
-    pub username: String,
-    pub password: String,
-    pub database: String,
 }
 
 #[allow(dead_code)]
