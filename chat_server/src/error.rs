@@ -11,6 +11,9 @@ pub struct ErrorOutput {
 
 #[derive(Error, Debug)]
 pub enum AppError {
+    #[error("jwt error: {0}")]
+    JwtError(#[from] jwt_simple::Error),
+
     #[error("email already exists: {0}")]
     EmailAlreadyExists(String),
 
@@ -51,8 +54,45 @@ impl IntoResponse for AppError {
             Self::CreateChatError(_) => StatusCode::BAD_REQUEST,
             Self::NotFound(_) => StatusCode::NOT_FOUND,
             Self::IoError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            _ => StatusCode::FORBIDDEN,
         };
 
         (status, Json(ErrorOutput::new(self.to_string()))).into_response()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use jwt_simple::algorithms::{RS384KeyPair, RS384PublicKey, RSAKeyPairLike, RSAPublicKeyLike};
+    use jwt_simple::claims::Claims;
+    use jwt_simple::prelude::Duration;
+
+    #[derive(Serialize, Deserialize, Clone, Debug)]
+    struct MyAdditionalData {
+        user_is_admin: bool,
+        user_country: String,
+    }
+
+    #[test]
+    fn test_encode_and_decode_should_work() {
+        let decoding_pem = include_str!("../keys/public.pem");
+        let encoding_pem = include_str!("../keys/private.pem");
+        let key_pair = RS384KeyPair::from_pem(encoding_pem).unwrap();
+        let public_key = RS384PublicKey::from_pem(decoding_pem).unwrap();
+
+        let my_additional_data = MyAdditionalData {
+            user_is_admin: false,
+            user_country: "FR".to_string(),
+        };
+
+        let claims = Claims::with_custom_claims(my_additional_data, Duration::from_secs(1000));
+        let encode = key_pair.sign(claims.clone()).unwrap();
+        println!("{}", encode);
+        let claims = public_key
+            .verify_token::<MyAdditionalData>(&encode, None)
+            .unwrap();
+        println!("{:?}", claims);
+        assert!(!claims.custom.user_is_admin)
     }
 }

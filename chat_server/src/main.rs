@@ -2,7 +2,6 @@ mod config;
 
 use anyhow::Result;
 use axum::Router;
-use chat_server::DatabaseConfig;
 use chat_server::{get_router, AppConfig};
 use tracing::info;
 use tracing::metadata::LevelFilter;

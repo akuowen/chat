@@ -3,14 +3,13 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs::File;
 
-use super::DatabaseConfig;
-
 #[derive(Debug, Deserialize, Serialize)]
 pub struct AppConfig {
     pub server: ServerConfig,
-    pub database: DatabaseConfig,
+    // pub database: DatabaseConfig,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Deserialize, Serialize)]
 pub struct ServerConfig {
     pub host: String,
